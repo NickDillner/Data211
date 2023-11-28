@@ -1,0 +1,59 @@
+---
+title: "Final Project"
+author: "Nick Dillner"
+date: "2023-11-20"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r External References,include=FALSE}
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+Water_Intake <- read_excel("Water_Intake.xlsx")
+```
+
+
+#### μ1, Mean Home
+#### u2, Mean Office
+
+$H0: μ1 = μ2$
+
+$H1: μ1 > μ2$
+
+$p-val < 0.05$
+```{r}
+tempWaterData <- Water_Intake%>%
+                 select(Environment,Ounces)%>%
+                 filter(!is.na(Environment))%>%
+                 arrange(Environment)
+
+t.test(Ounces~Environment, data=tempWaterData, alternative="greater")
+```
+
+#### We reject the H0, we have enough evidence to conclude that the mean number of ounces drank on days where I worked from home is significantly greater than the mean number of ounces drank when working in the office.
+
+
+```{r}
+tempWaterData <- Water_Intake%>%
+                 select(Environment,Ounces)%>%
+                 filter(!is.na(Environment))%>%
+                 arrange(Environment)
+
+tempWaterData <- tempWaterData%>%
+                 group_by(Environment)%>%
+                 summarise(OuncesMean=mean(Ounces))
+
+ggplot(tempWaterData,aes(x=Environment,y=OuncesMean,fill=Environment))+geom_col(color="black",lwd=1)+geom_text(aes(label=OuncesMean),vjust=2,colour="white")+labs(title="Water Intake",x="Environment",y="Mean Ounces of Water")
+```
+
+
+
+
+
+
